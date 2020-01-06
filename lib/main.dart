@@ -1,7 +1,26 @@
-import 'package:air_components/widget/search_city.dart';
+import 'dart:io';
+
+import 'package:air_components/bloc/observer_bloc.dart';
+import 'package:air_components/util/locator.dart';
+import 'package:air_components/widget/home_page.dart';
+import 'package:bloc_provider/bloc_provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  setupLocator();
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.dumpErrorToConsole(details);
+    if (kReleaseMode)
+      exit(1);
+  };
+  runApp(
+    BlocProvider<ObserverBloc>(
+      creator: (_context, _bag) => ObserverBloc(),
+      child: MyApp(),
+    ),
+  );
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,14 +45,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: SearchCity(),
+      body: HomePage(),
     );
   }
 }
