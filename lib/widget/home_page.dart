@@ -1,15 +1,16 @@
 import 'package:air_components/bloc/observer_bloc.dart';
 import 'package:air_components/model/main_request/city.dart';
 import 'package:air_components/model/main_request/iaqi.dart';
-import 'package:air_components/util/color_util.dart';
+import 'package:air_components/util/aqi_util.dart';
 import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key key}) : super(key: key);
-
+  final int sizeAttributes = 6;
   @override
   Widget build(BuildContext context) {
     final bloc = BlocProvider.of<ObserverBloc>(context);
@@ -62,23 +63,8 @@ class HomePage extends StatelessWidget {
                               ),
                               Align(
                                 alignment: Alignment(0, 1),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 3, horizontal: 8),
-                                  decoration: BoxDecoration(
-                                      color: Colors.green,
-                                      borderRadius: BorderRadius.circular(4)),
-                                  child: InkWell(
-                                    onTap: () {
-                                      print("Hello");
-                                    },
-                                    child: Text(
-                                      "Moderate",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ),
-                                ),
-                              )
+                                child: _buildStatus(snapshot?.data),
+                              ),
                             ],
                           );
                         }),
@@ -94,7 +80,8 @@ class HomePage extends StatelessWidget {
                           crossAxisCount: 2,
                           physics: ScrollPhysics(),
                           shrinkWrap: true,
-                          children: _buildAirComponents(snapshot.data),
+                          children: _buildAirComponents(
+                              snapshot.data?.sublist(0, sizeAttributes)),
                         );
                     },
                   ),
@@ -143,6 +130,23 @@ class HomePage extends StatelessWidget {
         primaryColor: color,
         secondColor: Colors.grey[200],
         unit: "AQI",
+      ),
+    );
+  }
+
+  Widget _buildStatus(int aqi) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+      decoration: BoxDecoration(
+          color: aqiColor(aqi), borderRadius: BorderRadius.circular(4)),
+      child: InkWell(
+        onTap: () {
+          Crashlytics.instance.crash();
+        },
+        child: Text(
+          aqiStatus(aqi),
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
