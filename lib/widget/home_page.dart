@@ -5,14 +5,19 @@ import 'package:air_components/util/aqi_util.dart';
 import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key key}) : super(key: key);
+  const HomePage({Key key, this.bannerAd}) : super(key: key);
   final int sizeAttributes = 6;
+  final BannerAd bannerAd;
   @override
   Widget build(BuildContext context) {
+    bannerAd
+      ..load()
+      ..show();
     final bloc = BlocProvider.of<ObserverBloc>(context);
     bloc.observerAirComponent(12);
     return Scaffold(
