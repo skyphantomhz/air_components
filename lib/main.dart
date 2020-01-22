@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:air_components/bloc/observer_bloc.dart';
+import 'package:air_components/bloc/search_city_bloc.dart';
 import 'package:air_components/util/locator.dart';
 import 'package:air_components/widget/home_page.dart';
+import 'package:air_components/widget/search_page.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -23,7 +25,10 @@ void main() {
     runApp(
       BlocProvider<ObserverBloc>(
         creator: (_context, _bag) => ObserverBloc(),
-        child: MyApp(),
+        child: BlocProvider<SearchCityBloc>(
+          creator: (_context, _bag) => SearchCityBloc(),
+          child: MyApp(),
+        ),
       ),
     );
   }, onError: Crashlytics.instance.recordError);
@@ -49,7 +54,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    FirebaseAdMob.instance.initialize(appId: "ca-app-pub-7567000157197488~5653744567");
+    FirebaseAdMob.instance
+        .initialize(appId: "ca-app-pub-7567000157197488~5653744567");
     _bannerAd = createBannerAd()..load();
     super.initState();
   }
@@ -79,10 +85,15 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(
-        bannerAd: _bannerAd,
-      ),
+      // home: HomePage(
+      //   bannerAd: _bannerAd,
+      // ),
       navigatorObservers: [MyApp.observer],
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SearchPage(),
+        '/main': (context) => HomePage(bannerAd: _bannerAd,),
+      },
     );
   }
 }

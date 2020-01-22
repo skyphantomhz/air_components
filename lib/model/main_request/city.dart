@@ -13,7 +13,7 @@ class City {
     url = json['url'];
     idx = json['idx'];
     id = json['id'];
-    geo = json['geo'].cast<String>();
+    geo = json['geo']?.cast<String>();
     key = json['key'];
   }
 

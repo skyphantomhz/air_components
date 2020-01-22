@@ -15,11 +15,12 @@ class HomePage extends StatelessWidget {
   final BannerAd bannerAd;
   @override
   Widget build(BuildContext context) {
-    bannerAd
-      ..load()
-      ..show();
+    // bannerAd
+    //   ..load()
+    //   ..show();
     final bloc = BlocProvider.of<ObserverBloc>(context);
-    bloc.observerAirComponent(12);
+    final HomeArguments args = ModalRoute.of(context).settings.arguments;
+    bloc.observerAirComponent(args.cityId);
     return Scaffold(
       body: StreamBuilder<Exception>(
           stream: bloc.exception,
@@ -85,11 +86,39 @@ class HomePage extends StatelessWidget {
                           crossAxisCount: 2,
                           physics: ScrollPhysics(),
                           shrinkWrap: true,
-                          children: _buildAirComponents(
-                              snapshot.data?.sublist(0, sizeAttributes)),
+                          children: _buildAirComponents(snapshot.data?.sublist(0, sizeAttributes)),
                         );
                     },
                   ),
+                  StreamBuilder(
+                    stream: bloc.iaqi,
+                    builder: (context, snapshot) {
+                      final components = snapshot?.data?.sublist(sizeAttributes);
+                      if (snapshot?.data == null)
+                        return Container();
+                      else
+                        return Container(
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Column(
+                                children: <Widget>[Text("Temp."), Text(components[0].v.first.toString())],
+                              ),
+                              Column(
+                                children: <Widget>[Text("Pressure"), Text(components[1].v.first.toString())],
+                              ),
+                              Column(
+                                children: <Widget>[Text("Humidity"), Text(components[2].v.first.toString())],
+                              ),
+                              Column(
+                                children: <Widget>[Text("Wind"), Text(components[3].v.first.toString())],
+                              ),
+                            ],
+                          ),
+                        );
+                    },
+                  )
                 ],
               );
           }),
@@ -155,4 +184,9 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+class HomeArguments {
+  final int cityId;
+  HomeArguments(this.cityId);
 }

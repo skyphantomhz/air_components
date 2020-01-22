@@ -1,6 +1,5 @@
 import 'package:air_components/model/main_request/city.dart';
 import 'package:air_components/model/main_request/iaqi.dart';
-import 'package:air_components/model/main_request/msg.dart';
 import 'package:air_components/service/air_component_service.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:rxdart/rxdart.dart';

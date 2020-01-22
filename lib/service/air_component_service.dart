@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 class AirComponentSerivce {
   final http.Client client = GetIt.I<http.Client>();
   final _decoder = GetIt.I<JsonDecoder>();
-  final baseRequest = "https://api.waqi.info/api/feed/@8642/obs.vn.json";
+  final baseRequest = "https://api.waqi.info/api/feed";
 
   Future<Msg> fetchData(int id) async {
     try {
-      final response = await client.get(baseRequest);
+      final response = await client.get(baseRequest +"/@$id/obs.vn.json");
       if (response.statusCode == 200) {
         final responseObject =
             ObserverResponse.fromJson(_decoder.convert(response.body));
