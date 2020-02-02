@@ -86,43 +86,81 @@ class HomePage extends StatelessWidget {
                           crossAxisCount: 2,
                           physics: ScrollPhysics(),
                           shrinkWrap: true,
-                          children: _buildAirComponents(snapshot.data?.sublist(0, sizeAttributes)),
+                          children: _buildAirComponents(
+                              _getAirComponents(snapshot.data)),
                         );
                     },
                   ),
                   StreamBuilder(
                     stream: bloc.iaqi,
                     builder: (context, snapshot) {
-                      final components = snapshot?.data?.sublist(sizeAttributes);
+                      final conditions = _getWeatherConditions(snapshot?.data);
                       if (snapshot?.data == null)
                         return Container();
                       else
-                        return Container(
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Column(
-                                children: <Widget>[Text("Temp."), Text(components[0].v.first.toString())],
-                              ),
-                              Column(
-                                children: <Widget>[Text("Pressure"), Text(components[1].v.first.toString())],
-                              ),
-                              Column(
-                                children: <Widget>[Text("Humidity"), Text(components[2].v.first.toString())],
-                              ),
-                              Column(
-                                children: <Widget>[Text("Wind"), Text(components[3].v.first.toString())],
-                              ),
-                            ],
-                          ),
-                        );
+                        return _buildConditions(conditions);
                     },
                   )
                 ],
               );
           }),
     );
+  }
+
+  List<Iaqi> _getAirComponents(List<Iaqi> items) {
+    return items
+        ?.where((item) =>
+            ["pm25", "pm10", "o3", "no2", "so2", "co"].contains(item?.p ?? ""))
+        ?.toList();
+  }
+
+  List<Iaqi> _getWeatherConditions(List<Iaqi> items) {
+    return items
+        ?.where((item) => ["t", "p", "h", "w", "r"].contains(item?.p ?? ""))
+        ?.toList();
+  }
+
+  Widget _buildConditions(List<Iaqi> conditions) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: conditions?.map((condition) {
+            return _buildCondition(condition);
+          })?.toList()),
+    );
+  }
+
+  Widget _buildCondition(Iaqi condition) {
+    return Column(
+      children: <Widget>[
+        Text(_getConditionTitle(condition.p)),
+        Text(condition.v.first.toString())
+      ],
+    );
+  }
+
+  String _getConditionTitle(String symbol) {
+    String title = "";
+    switch (symbol) {
+      case "t":
+        title = "Temp.";
+        break;
+      case "p":
+        title = "Pressure";
+        break;
+      case "h":
+        title = "Humidity";
+        break;
+      case "w":
+        title = "Wind";
+        break;
+      case "r":
+        title = "Rain";
+        break;
+      default:
+    }
+    return title;
   }
 
   _buildArcView(AsyncSnapshot<int> snapshot) {

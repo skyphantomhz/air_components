@@ -8,9 +8,13 @@ class Iaqi {
 
   Iaqi.fromJson(Map<String, dynamic> json) {
     p = json['p'];
-    v = json['v'].cast<int>();
     i = json['i'];
     h = json['h'].cast<String>();
+    try {
+      v = json['v']?.cast<int>();
+    } catch(error) {
+      v = [0, 0, 0];
+    }
   }
 
   Map<String, dynamic> toJson() {
