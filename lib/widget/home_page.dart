@@ -24,14 +24,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     bloc = BlocProvider.of<ObserverBloc>(context);
-    bloc.observerAirComponent(1584);
+    bloc.fetchData();
     super.initState();
   }
 
   void _setListener(ObserverBloc bloc, BuildContext context) {
     bloc.isLoading.listen((value) {
       if (value == true) {
-        _showDialog(context);
+        // _showDialog(context);
       } else {
         // Navigator.of(context).pop();
       }
@@ -63,8 +63,11 @@ class _HomePageState extends State<HomePage> {
                         stream: bloc.city,
                         builder: (context, snapshot) {
                           return InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, "/search");
+                            onTap: () async {
+                              final result = await Navigator.pushNamed(context, "/search");
+                              if(result != null){
+                                 bloc.fetchData();
+                              }
                             },
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,

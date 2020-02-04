@@ -23,11 +23,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     bloc.navigateToMain.listen((cityId) {
       if (cityId != null) {
-        Navigator.pop(context);
-        Navigator.pushNamed(
-          context,
-          "/",
-        );
+        Navigator.pop(context, cityId);
       }
     });
     return Scaffold(

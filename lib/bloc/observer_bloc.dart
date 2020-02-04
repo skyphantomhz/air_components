@@ -4,6 +4,7 @@ import 'package:air_components/service/air_component_service.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ObserverBloc extends Bloc {
   AirComponentSerivce airService = AirComponentSerivce();
@@ -23,7 +24,12 @@ class ObserverBloc extends Bloc {
   PublishSubject<bool> _isLoading = PublishSubject();
   Observable<bool> get isLoading => _isLoading.stream;
 
-  void observerAirComponent(int id) async {
+  void fetchData() async {
+    final cityId = await getSelectedCity();
+    _observerAirComponent(cityId);
+  }
+
+  void _observerAirComponent(int id) async {
     try {
       _isLoading.add(true);
       final response = await airService.fetchData(id);
@@ -42,5 +48,10 @@ class ObserverBloc extends Bloc {
     _city.close();
     _aqi.close();
     _iaqi.close();
+  }
+
+  Future<int> getSelectedCity() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('cityId') ?? 1584;
   }
 }
