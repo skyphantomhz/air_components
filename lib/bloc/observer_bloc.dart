@@ -20,13 +20,20 @@ class ObserverBloc extends Bloc {
   PublishSubject<List<Iaqi>> _iaqi = PublishSubject();
   Observable<List<Iaqi>> get iaqi => _iaqi.stream;
 
+  PublishSubject<bool> _isLoading = PublishSubject();
+  Observable<bool> get isLoading => _isLoading.stream;
+
   void observerAirComponent(int id) async {
     try {
+      _isLoading.add(true);
       final response = await airService.fetchData(id);
       _city.sink.add(response.city);
       _aqi.sink.add(response.aqi);
       _iaqi.sink.add(response.iaqi);
-    } catch (ex) {}
+      _isLoading.add(false);
+    } catch (ex) {
+      print("Error here: "+ex);
+    }
   }
 
   @override

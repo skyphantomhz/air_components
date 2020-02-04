@@ -9,18 +9,43 @@ import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({Key key, this.bannerAd}) : super(key: key);
-  final int sizeAttributes = 6;
   final BannerAd bannerAd;
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final int sizeAttributes = 6;
+
+  ObserverBloc bloc;
+  @override
+  void initState() {
+    bloc = BlocProvider.of<ObserverBloc>(context);
+    bloc.observerAirComponent(1584);
+    super.initState();
+  }
+
+  void _setListener(ObserverBloc bloc, BuildContext context) {
+    bloc.isLoading.listen((value) {
+      if (value == true) {
+        _showDialog(context);
+      } else {
+        // Navigator.of(context).pop();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // bannerAd
-    //   ..load()
-    //   ..show();
-    final bloc = BlocProvider.of<ObserverBloc>(context);
-    final HomeArguments args = ModalRoute.of(context).settings.arguments;
-    bloc.observerAirComponent(args.cityId);
+    widget.bannerAd
+      ..load()
+      ..show();
+
+    _setListener(bloc, context);
+
     return Scaffold(
       body: StreamBuilder<Exception>(
           stream: bloc.exception,
@@ -37,9 +62,22 @@ class HomePage extends StatelessWidget {
                     child: StreamBuilder<City>(
                         stream: bloc.city,
                         builder: (context, snapshot) {
-                          return Text(
-                            snapshot?.data?.name ?? "N/A",
-                            style: TextStyle(fontSize: 20),
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(context, "/search");
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Text(
+                                  snapshot?.data?.name ?? "N/A",
+                                  style: TextStyle(fontSize: 20),
+                                ),
+                                Container(child: Icon(Icons.edit, size: 15))
+                              ],
+                            ),
                           );
                         }),
                   ),
@@ -69,7 +107,7 @@ class HomePage extends StatelessWidget {
                               ),
                               Align(
                                 alignment: Alignment(0, 1),
-                                child: _buildStatus(snapshot?.data),
+                                child: _buildStatus(context, snapshot?.data),
                               ),
                             ],
                           );
@@ -163,6 +201,19 @@ class HomePage extends StatelessWidget {
     return title;
   }
 
+  _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Center(
+              child: SizedBox(
+                  width: 20, height: 20, child: CircularProgressIndicator()),
+            ),
+          );
+        });
+  }
+
   _buildArcView(AsyncSnapshot<int> snapshot) {
     var aqi = snapshot.data ?? 0;
     double percent = aqi == 0 ? 0 : aqi / 300;
@@ -206,14 +257,15 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatus(int aqi) {
+  Widget _buildStatus(BuildContext context, int aqi) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
       decoration: BoxDecoration(
           color: aqiColor(aqi), borderRadius: BorderRadius.circular(4)),
       child: InkWell(
         onTap: () {
-          Crashlytics.instance.crash();
+          _showDialog(context);
+          // Crashlytics.instance.crash();
         },
         child: Text(
           aqiStatus(aqi),
@@ -222,9 +274,4 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-}
-
-class HomeArguments {
-  final int cityId;
-  HomeArguments(this.cityId);
 }

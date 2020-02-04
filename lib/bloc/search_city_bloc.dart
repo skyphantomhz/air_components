@@ -24,10 +24,12 @@ class SearchCityBloc extends Bloc {
 
   void search(String keyword) async {
     if (keyword == null || keyword?.length == 0) return;
-    print("search city");
     List<CitySortInfo> response = await _cityService.searchCity(keyword);
-    print(response.toString());
-    _cities.sink.add(response);
+    try {
+      _cities.sink.add(response);
+    } catch (err) {
+      print("Error: "+err.toString());
+    }
   }
 
   void selectCity(int cityId) async {

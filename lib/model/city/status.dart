@@ -1,23 +1,23 @@
 class Status {
-  String a;
-  List<String> t;
-  List<String> n;
+  String aqi;
+  List<String> time;
+  List<String> names;
   String u;
 
-  Status({this.a, this.t, this.n, this.u});
+  Status({this.aqi, this.time, this.names, this.u});
 
   Status.fromJson(Map<String, dynamic> json) {
-    a = json['a'];
-    t = json['t']?.cast<String>();
-    n = json['n']?.cast<String>();
+    aqi = json['a'];
+    time = json['t']?.cast<String>();
+    names = json['n']?.cast<String>();
     u = json['u'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['a'] = this.a;
-    data['t'] = this.t;
-    data['n'] = this.n;
+    data['a'] = this.aqi;
+    data['t'] = this.time;
+    data['n'] = this.names;
     data['u'] = this.u;
     return data;
   }

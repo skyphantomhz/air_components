@@ -1,7 +1,6 @@
 import 'package:air_components/bloc/search_city_bloc.dart';
 import 'package:air_components/model/city/city_sort_info.dart';
 import 'package:air_components/util/aqi_util.dart';
-import 'package:air_components/widget/home_page.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -13,16 +12,21 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  SearchCityBloc bloc;
+  @override
+  void initState() {
+    bloc = BlocProvider.of<SearchCityBloc>(context);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<SearchCityBloc>(context);
     bloc.navigateToMain.listen((cityId) {
       if (cityId != null) {
         Navigator.pop(context);
         Navigator.pushNamed(
           context,
-          "/main",
-          arguments: HomeArguments(cityId),
+          "/",
         );
       }
     });
@@ -51,10 +55,8 @@ class _SearchPageState extends State<SearchPage> {
                   final item = data[index];
                   int itemAqi;
                   try {
-                    itemAqi = int.parse(item.s.a);
-                  } on FormatException {
-                    print('Format error!');
-                  }
+                    itemAqi = int.parse(item.s.aqi);
+                  } on FormatException {}
                   return InkWell(
                     onTap: () {
                       bloc.selectCity(item.x);
@@ -70,7 +72,7 @@ class _SearchPageState extends State<SearchPage> {
                               color: aqiColor(itemAqi), shape: BoxShape.circle),
                           alignment: Alignment.center,
                           child: Text(
-                            item.s.a,
+                            item.s.aqi,
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

@@ -85,14 +85,11 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      // home: HomePage(
-      //   bannerAd: _bannerAd,
-      // ),
       navigatorObservers: [MyApp.observer],
       initialRoute: '/',
       routes: {
-        '/': (context) => SearchPage(),
-        '/main': (context) => HomePage(bannerAd: _bannerAd,),
+        '/search': (context) => SearchPage(),
+        '/': (context) => HomePage(bannerAd: _bannerAd,),
       },
     );
   }
