@@ -263,8 +263,13 @@ class _HomePageState extends State<HomePage> {
 
   _buildAirComponent(Iaqi iaqi) {
     var currentValue = 0;
+<<<<<<< HEAD
     if(iaqi?.v?.first != "-"){
       currentValue = int.parse(iaqi?.v?.first??0);
+=======
+    if(iaqi?.v?.first.toString() != "-"){
+      currentValue = iaqi?.v?.first;
+>>>>>>> Improve behavior
     }
     double percent = currentValue == 0 ? 0 : currentValue / 300;
     var color = aqiColor(currentValue);
