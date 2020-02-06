@@ -16,13 +16,27 @@ class SearchCityBloc extends Bloc {
   PublishSubject<int> _navigateToMain = PublishSubject<int>();
   Observable<int> get navigateToMain => _navigateToMain.stream;
 
+  PublishSubject<String> _keyword = PublishSubject<String>();
+  Observable<String> get keyword => _keyword.stream;
+
   @override
   void dispose() {
     _cities.close();
     _navigateToMain.close();
+    _keyword.close();
   }
 
-  void search(String keyword) async {
+  void listener(){
+    keyword.debounceTime(Duration(milliseconds: 500)).listen((keyword){
+      _search(keyword);
+    });
+  }
+
+  void keyWordChange(String keyword){
+    _keyword.sink.add(keyword);
+  }
+
+  void _search(String keyword) async {
     if (keyword == null || keyword?.length == 0) return;
     List<CitySortInfo> response = await _cityService.searchCity(keyword);
     try {

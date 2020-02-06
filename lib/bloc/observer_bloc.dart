@@ -38,7 +38,7 @@ class ObserverBloc extends Bloc {
       _iaqi.sink.add(response.iaqi);
       _isLoading.add(false);
     } catch (ex) {
-      print("Error here: "+ex);
+      print("Error here: "+ex.toString());
     }
   }
 

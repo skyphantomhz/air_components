@@ -1,20 +1,14 @@
 class Iaqi {
   String p;
-  List<int> v;
+  List<dynamic> v;
   String i;
-  List<String> h;
 
-  Iaqi({this.p, this.v, this.i, this.h});
+  Iaqi({this.p, this.v, this.i});
 
   Iaqi.fromJson(Map<String, dynamic> json) {
     p = json['p'];
     i = json['i'];
-    h = json['h'].cast<String>();
-    try {
-      v = json['v']?.cast<int>();
-    } catch(error) {
-      v = [0, 0, 0];
-    }
+    v = json['v']?.cast<dynamic>();
   }
 
   Map<String, dynamic> toJson() {
@@ -22,7 +16,6 @@ class Iaqi {
     data['p'] = this.p;
     data['v'] = this.v;
     data['i'] = this.i;
-    data['h'] = this.h;
     return data;
   }
 }
