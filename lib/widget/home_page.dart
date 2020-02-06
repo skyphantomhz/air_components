@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:air_components/bloc/observer_bloc.dart';
 import 'package:air_components/model/main_request/city.dart';
 import 'package:air_components/model/main_request/iaqi.dart';
@@ -6,7 +8,6 @@ import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:firebase_admob/firebase_admob.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,13 +20,23 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final int sizeAttributes = 6;
+  final scheduleFetch = const Duration(minutes: 5);
+  Timer timer;
 
   ObserverBloc bloc;
   @override
   void initState() {
     bloc = BlocProvider.of<ObserverBloc>(context);
     bloc.fetchData();
+    timer?.cancel();
+    timer = new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   void _setListener(ObserverBloc bloc, BuildContext context) {
@@ -64,22 +75,31 @@ class _HomePageState extends State<HomePage> {
                         builder: (context, snapshot) {
                           return InkWell(
                             onTap: () async {
-                              final result = await Navigator.pushNamed(context, "/search");
-                              if(result != null){
-                                 bloc.fetchData();
+                              final result =
+                                  await Navigator.pushNamed(context, "/search");
+                              if (result != null) {
+                                bloc.fetchData();
+                                timer?.cancel();
+                                timer = new Timer.periodic(
+                                    scheduleFetch, (Timer t) => bloc.fetchData());
                               }
                             },
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                Text(
-                                  snapshot?.data?.name ?? "N/A",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                Container(child: Icon(Icons.edit, size: 15))
-                              ],
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 40),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(
+                                    snapshot?.data?.name ?? "N/A",
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  Container(child: Icon(Icons.edit, size: 15))
+                                ],
+                              ),
                             ),
                           );
                         }),
@@ -242,7 +262,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   _buildAirComponent(Iaqi iaqi) {
-    var currentValue = iaqi.v.first ?? 0;
+    var currentValue = 0;
+    if(iaqi?.v?.first.toString() != "-"){
+      currentValue = iaqi?.v?.first;
+    }
     double percent = currentValue == 0 ? 0 : currentValue / 300;
     var color = aqiColor(currentValue);
     percent = percent > 1 ? 1 : percent;

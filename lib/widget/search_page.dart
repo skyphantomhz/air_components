@@ -16,16 +16,17 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void initState() {
     bloc = BlocProvider.of<SearchCityBloc>(context);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+    bloc.listener();
     bloc.navigateToMain.listen((cityId) {
       if (cityId != null) {
         Navigator.pop(context, cityId);
       }
     });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -33,8 +34,11 @@ class _SearchPageState extends State<SearchPage> {
               border: UnderlineInputBorder(),
               hintText: "Input your city name",
               filled: true),
+          onChanged: (keyWord){
+            bloc.keyWordChange(keyWord);
+          },
           onSubmitted: (keyWord) {
-            bloc.search(keyWord);
+            bloc.keyWordChange(keyWord);
           },
         ),
       ),

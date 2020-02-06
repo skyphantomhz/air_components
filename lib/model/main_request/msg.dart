@@ -34,7 +34,10 @@ class Msg {
         iaqi.add(new Iaqi.fromJson(v));
       });
     }
-    aqi = json['aqi'];
+    aqi = 0;
+    if(json['aqi'].toString() != "-"){
+      aqi = json['aqi'];
+    }
     time = json['time'] != null ? new Time.fromJson(json['time']) : null;
     i18n = json['i18n'] != null ? new I18n.fromJson(json['i18n']) : null;
     forecast = json['forecast'] != null
