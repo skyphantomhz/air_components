@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "584074656529",
+    "firebase_url": "https://air-components-48e77.firebaseio.com",
+    "project_id": "air-components-48e77",
+    "storage_bucket": "air-components-48e77.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584074656529:android:904200975300c59b36eab0",
+        "android_client_info": {
+          "package_name": "com.skyphantomhz.air_components"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584074656529-0i8uen7r1apoooqav84up8ehiumignhd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.skyphantomhz.air_components",
+            "certificate_hash": "c9bb2603f5c94ac8ef211bfbb3e75d8d6c8ba281"
+          }
+        },
+        {
+          "client_id": "584074656529-97jo151gjh23bcjuo8dc3lmupivthou4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBke7EOam2_nX3z9e4u7rJIdNYt7q9RXL0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584074656529-97jo151gjh23bcjuo8dc3lmupivthou4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
