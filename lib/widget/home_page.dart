@@ -21,15 +21,18 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final int sizeAttributes = 6;
   final scheduleFetch = const Duration(minutes: 5);
+  bool isLoading;
   Timer timer;
 
   ObserverBloc bloc;
   @override
   void initState() {
     bloc = BlocProvider.of<ObserverBloc>(context);
-    bloc.fetchData();
+    _setListener(bloc, context);
+    bloc.fetchData(null);
     timer?.cancel();
-    timer = new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData());
+    timer =
+        new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData(null));
     super.initState();
   }
 
@@ -41,10 +44,12 @@ class _HomePageState extends State<HomePage> {
 
   void _setListener(ObserverBloc bloc, BuildContext context) {
     bloc.isLoading.listen((value) {
-      if (value == true) {
-        // _showDialog(context);
+      if (value == true && mounted) {
+        _showDialog(context);
       } else {
-        // Navigator.of(context).pop();
+        if (isLoading) {
+          Navigator.of(context).pop();
+        }
       }
     });
   }
@@ -54,9 +59,6 @@ class _HomePageState extends State<HomePage> {
     widget.bannerAd
       ..load()
       ..show();
-
-    _setListener(bloc, context);
-
     return Scaffold(
       body: StreamBuilder<Exception>(
           stream: bloc.exception,
@@ -78,10 +80,10 @@ class _HomePageState extends State<HomePage> {
                               final result =
                                   await Navigator.pushNamed(context, "/search");
                               if (result != null) {
-                                bloc.fetchData();
+                                bloc.fetchData(result);
                                 timer?.cancel();
-                                timer = new Timer.periodic(
-                                    scheduleFetch, (Timer t) => bloc.fetchData());
+                                timer = new Timer.periodic(scheduleFetch,
+                                    (Timer t) => bloc.fetchData(null));
                               }
                             },
                             child: Container(
@@ -224,9 +226,11 @@ class _HomePageState extends State<HomePage> {
     return title;
   }
 
-  _showDialog(BuildContext context) {
-    showDialog(
+  _showDialog(BuildContext context) async {
+    isLoading = true;
+    await showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return Container(
             child: Center(
@@ -235,6 +239,7 @@ class _HomePageState extends State<HomePage> {
             ),
           );
         });
+    isLoading = false;
   }
 
   _buildArcView(AsyncSnapshot<int> snapshot) {
@@ -264,10 +269,14 @@ class _HomePageState extends State<HomePage> {
   _buildAirComponent(Iaqi iaqi) {
     var currentValue = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
     if(iaqi?.v?.first != "-"){
       currentValue = int.parse(iaqi?.v?.first??0);
 =======
     if(iaqi?.v?.first.toString() != "-"){
+=======
+    if (iaqi?.v?.first.toString() != "-") {
+>>>>>>> add loading
       currentValue = iaqi?.v?.first;
 >>>>>>> Improve behavior
     }

@@ -24,8 +24,8 @@ class ObserverBloc extends Bloc {
   PublishSubject<bool> _isLoading = PublishSubject();
   Observable<bool> get isLoading => _isLoading.stream;
 
-  void fetchData() async {
-    final cityId = await getSelectedCity();
+  void fetchData(int explicitCityId) async {
+    var cityId = explicitCityId == null ? await getSelectedCity() : explicitCityId;
     _observerAirComponent(cityId);
   }
 
