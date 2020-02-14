@@ -99,7 +99,9 @@ class _HomePageState extends State<HomePage> {
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(fontSize: 20),
                                   ),
-                                  Container(child: Icon(Icons.edit, size: 15))
+                                  Container(
+                                      margin: EdgeInsets.only(left: 5),
+                                      child: Icon(Icons.edit, size: 15))
                                 ],
                               ),
                             ),
@@ -161,7 +163,16 @@ class _HomePageState extends State<HomePage> {
                       if (snapshot?.data == null)
                         return Container();
                       else
-                        return _buildConditions(conditions);
+                        return Column(
+                          children: <Widget>[
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                    margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                    child: Text("Weather", style: TextStyle(fontSize: 15),))),
+                            _buildConditions(conditions),
+                          ],
+                        );
                     },
                   )
                 ],
@@ -197,33 +208,11 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCondition(Iaqi condition) {
     return Column(
       children: <Widget>[
-        Text(_getConditionTitle(condition.p)),
-        Text(condition.v.first.toString())
+        Text(condition.getConditionTitle()),
+        Text(
+            "${condition.v.first.toString()}${condition.getConditionUnit(true)}")
       ],
     );
-  }
-
-  String _getConditionTitle(String symbol) {
-    String title = "";
-    switch (symbol) {
-      case "t":
-        title = "Temp.";
-        break;
-      case "p":
-        title = "Pressure";
-        break;
-      case "h":
-        title = "Humidity";
-        break;
-      case "w":
-        title = "Wind";
-        break;
-      case "r":
-        title = "Rain";
-        break;
-      default:
-    }
-    return title;
   }
 
   _showDialog(BuildContext context) async {

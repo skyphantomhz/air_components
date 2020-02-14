@@ -36,10 +36,10 @@ class ObserverBloc extends Bloc {
       _city.sink.add(response.city);
       _aqi.sink.add(response.aqi);
       _iaqi.sink.add(response.iaqi);
-      _isLoading.add(false);
     } catch (ex) {
       print("Error here: "+ex.toString());
     }
+    _isLoading.add(false);
   }
 
   @override
