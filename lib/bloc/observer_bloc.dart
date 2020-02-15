@@ -1,5 +1,6 @@
 import 'package:air_components/model/main_request/city.dart';
 import 'package:air_components/model/main_request/iaqi.dart';
+import 'package:air_components/model/main_request/msg.dart';
 import 'package:air_components/service/air_component_service.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:rxdart/rxdart.dart';
@@ -25,19 +26,23 @@ class ObserverBloc extends Bloc {
   Observable<bool> get isLoading => _isLoading.stream;
 
   void fetchData(int explicitCityId) async {
-    var cityId = explicitCityId == null ? await getSelectedCity() : explicitCityId;
+    var cityId =
+        explicitCityId == null ? await getSelectedCity() : explicitCityId;
     _observerAirComponent(cityId);
   }
 
   void _observerAirComponent(int id) async {
     try {
       _isLoading.add(true);
-      final response = await airService.fetchData(id);
-      _city.sink.add(response.city);
-      _aqi.sink.add(response.aqi);
-      _iaqi.sink.add(response.iaqi);
+      Msg response = await airService.fetchData(id);
+      if (response == null) {
+        response = await airService.fetchData(id);
+      }
+      _city.sink.add(response?.city);
+      _aqi.sink.add(response?.aqi);
+      _iaqi.sink.add(response?.iaqi);
     } catch (ex) {
-      print("Error here: "+ex.toString());
+      print("Error here: " + ex.toString());
     }
     _isLoading.add(false);
   }

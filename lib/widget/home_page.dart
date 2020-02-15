@@ -60,124 +60,144 @@ class _HomePageState extends State<HomePage> {
       ..load()
       ..show();
     return Scaffold(
-      body: StreamBuilder<Exception>(
-          stream: bloc.exception,
-          builder: (context, snapshot) {
-            final exception = snapshot?.data;
-            if (exception != null)
-              return Center(child: Text("${exception.toString()}"));
-            else
-              return ListView(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    margin: EdgeInsets.only(top: 20),
-                    child: StreamBuilder<City>(
-                        stream: bloc.city,
-                        builder: (context, snapshot) {
-                          return InkWell(
-                            onTap: () async {
-                              final result =
-                                  await Navigator.pushNamed(context, "/search");
-                              if (result != null) {
-                                bloc.fetchData(result);
-                                timer?.cancel();
-                                timer = new Timer.periodic(scheduleFetch,
-                                    (Timer t) => bloc.fetchData(null));
-                              }
-                            },
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 40),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(
-                                    snapshot?.data?.name ?? "N/A",
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(fontSize: 20),
-                                  ),
-                                  Container(
-                                      margin: EdgeInsets.only(left: 5),
-                                      child: Icon(Icons.edit, size: 15))
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                  Container(
-                    height: 200.0,
-                    margin: EdgeInsets.only(top: 30),
-                    alignment: Alignment.topCenter,
-                    child: StreamBuilder<int>(
-                        stream: bloc.aqi,
-                        builder: (context, snapshot) {
-                          return Stack(
-                            children: <Widget>[
-                              Align(
-                                alignment: Alignment.topCenter,
-                                child: _buildArcView(snapshot),
-                              ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(snapshot?.data?.toString() ?? "",
-                                    style: TextStyle(
-                                        fontFamily: 'AllRoundGothic',
-                                        fontSize: 70)),
-                              ),
-                              Align(
-                                alignment: Alignment(0, 0.5),
-                                child: Text("AQI"),
-                              ),
-                              Align(
-                                alignment: Alignment(0, 1),
-                                child: _buildStatus(context, snapshot?.data),
-                              ),
-                            ],
-                          );
-                        }),
-                  ),
-                  StreamBuilder<List<Iaqi>>(
-                    stream: bloc.iaqi,
-                    builder: (context, snapshot) {
-                      if (snapshot?.data == null)
-                        return Container();
-                      else
-                        return GridView.count(
-                          childAspectRatio: 4,
-                          crossAxisCount: 2,
-                          physics: ScrollPhysics(),
-                          shrinkWrap: true,
-                          children: _buildAirComponents(
-                              _getAirComponents(snapshot.data)),
-                        );
-                    },
-                  ),
-                  StreamBuilder(
-                    stream: bloc.iaqi,
-                    builder: (context, snapshot) {
-                      final conditions = _getWeatherConditions(snapshot?.data);
-                      if (snapshot?.data == null)
-                        return Container();
-                      else
-                        return Column(
-                          children: <Widget>[
-                            Align(
-                                alignment: Alignment.centerLeft,
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            setState(() {});
+          },
+          child: StreamBuilder<Exception>(
+              stream: bloc.exception,
+              builder: (context, snapshot) {
+                final exception = snapshot?.data;
+                if (exception != null)
+                  return Center(child: Text("${exception.toString()}"));
+                else
+                  return ListView(
+                    children: <Widget>[
+                      Container(
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(top: 20),
+                        child: StreamBuilder<City>(
+                            stream: bloc.city,
+                            builder: (context, snapshot) {
+                              return InkWell(
+                                onTap: () async {
+                                  final result = await Navigator.pushNamed(
+                                      context, "/search");
+                                  if (result != null) {
+                                    bloc.fetchData(result);
+                                    timer?.cancel();
+                                    timer = new Timer.periodic(scheduleFetch,
+                                        (Timer t) => bloc.fetchData(null));
+                                  }
+                                },
                                 child: Container(
-                                    margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
-                                    child: Text("Weather", style: TextStyle(fontSize: 15),))),
-                            _buildConditions(conditions),
-                          ],
-                        );
-                    },
-                  )
-                ],
-              );
-          }),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 40),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Container(
+                                        constraints:
+                                            BoxConstraints(maxWidth: 250),
+                                        child: Text(
+                                          snapshot?.data?.name ?? "N/A",
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                          style: TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                      Container(
+                                          margin: EdgeInsets.only(left: 5),
+                                          child: Icon(Icons.edit, size: 15))
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                      Container(
+                        height: 200.0,
+                        margin: EdgeInsets.only(top: 30),
+                        alignment: Alignment.topCenter,
+                        child: StreamBuilder<int>(
+                            stream: bloc.aqi,
+                            builder: (context, snapshot) {
+                              return Stack(
+                                children: <Widget>[
+                                  Align(
+                                    alignment: Alignment.topCenter,
+                                    child: _buildArcView(snapshot),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                        snapshot?.data?.toString() ?? "",
+                                        style: TextStyle(
+                                            fontFamily: 'AllRoundGothic',
+                                            fontSize: 70)),
+                                  ),
+                                  Align(
+                                    alignment: Alignment(0, 0.5),
+                                    child: Text("AQI"),
+                                  ),
+                                  Align(
+                                    alignment: Alignment(0, 1),
+                                    child:
+                                        _buildStatus(context, snapshot?.data),
+                                  ),
+                                ],
+                              );
+                            }),
+                      ),
+                      StreamBuilder<List<Iaqi>>(
+                        stream: bloc.iaqi,
+                        builder: (context, snapshot) {
+                          if (snapshot?.data == null)
+                            return Container();
+                          else
+                            return GridView.count(
+                              childAspectRatio: 4,
+                              crossAxisCount: 2,
+                              physics: ScrollPhysics(),
+                              shrinkWrap: true,
+                              children: _buildAirComponents(
+                                  _getAirComponents(snapshot.data)),
+                            );
+                        },
+                      ),
+                      StreamBuilder(
+                        stream: bloc.iaqi,
+                        builder: (context, snapshot) {
+                          final conditions =
+                              _getWeatherConditions(snapshot?.data);
+                          if (snapshot?.data == null)
+                            return Container();
+                          else
+                            return Column(
+                              children: <Widget>[
+                                Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Container(
+                                        margin:
+                                            EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                        child: Text(
+                                          "Weather",
+                                          style: TextStyle(fontSize: 15),
+                                        ))),
+                                _buildConditions(conditions),
+                              ],
+                            );
+                        },
+                      )
+                    ],
+                  );
+              }),
+        ),
+      ),
     );
   }
 
@@ -257,17 +277,8 @@ class _HomePageState extends State<HomePage> {
 
   _buildAirComponent(Iaqi iaqi) {
     var currentValue = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if(iaqi?.v?.first != "-"){
-      currentValue = int.parse(iaqi?.v?.first??0);
-=======
-    if(iaqi?.v?.first.toString() != "-"){
-=======
     if (iaqi?.v?.first.toString() != "-") {
->>>>>>> add loading
       currentValue = iaqi?.v?.first;
->>>>>>> Improve behavior
     }
     double percent = currentValue == 0 ? 0 : currentValue / 300;
     var color = aqiColor(currentValue);
