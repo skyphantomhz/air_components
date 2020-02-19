@@ -54,6 +54,9 @@ flutter:
   assets:
    - assets/flare/sun.flr
    - assets/flare/pressure.flr
+   - assets/flare/hurmit.flr
+   - assets/flare/wind.flr
+   - assets/flare/rain.flr
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

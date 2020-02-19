@@ -72,13 +72,13 @@ class Iaqi {
         url = "assets/flare/pressure.flr";
         break;
       case "h":
-        url = "assets/flare/sun.flr";
+        url = "assets/flare/hurmit.flr";
         break;
       case "w":
-        url = "assets/flare/sun.flr";
+        url = "assets/flare/wind.flr";
         break;
       case "r":
-        url = "assets/flare/sun.flr";
+        url = "assets/flare/rain.flr";
         break;
       default:
     }
