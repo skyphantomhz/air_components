@@ -61,4 +61,27 @@ class Iaqi {
     }
     return title;
   }
+
+  String getConditionIconUrl() {
+    String url = "";
+    switch (p) {
+      case "t":
+        url = "assets/flare/sun.flr";
+        break;
+      case "p":
+        url = "assets/flare/pressure.flr";
+        break;
+      case "h":
+        url = "assets/flare/sun.flr";
+        break;
+      case "w":
+        url = "assets/flare/sun.flr";
+        break;
+      case "r":
+        url = "assets/flare/sun.flr";
+        break;
+      default:
+    }
+    return url;
+  }
 }

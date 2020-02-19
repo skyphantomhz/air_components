@@ -8,6 +8,7 @@ import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:firebase_admob/firebase_admob.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -63,7 +64,7 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            setState(() {});
+            bloc.fetchData(null);
           },
           child: StreamBuilder<Exception>(
               stream: bloc.exception,
@@ -228,11 +229,18 @@ class _HomePageState extends State<HomePage> {
   Widget _buildCondition(Iaqi condition) {
     return Column(
       children: <Widget>[
-        Text(condition.getConditionTitle()),
+        Container(
+          width: 50,
+          height: 50,
+          child: buildConditionIcon(condition.getConditionIconUrl())),
         Text(
             "${condition.v.first.toString()}${condition.getConditionUnit(true)}")
       ],
     );
+  }
+
+  Widget buildConditionIcon(String conditionIconUrl){
+    return FlareActor(conditionIconUrl, alignment:Alignment.center, fit:BoxFit.contain, animation:"Untitled");
   }
 
   _showDialog(BuildContext context) async {
