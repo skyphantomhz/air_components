@@ -6,6 +6,7 @@ import 'package:air_components/bloc/search_city_bloc.dart';
 import 'package:air_components/util/locator.dart';
 import 'package:air_components/widget/home_page.dart';
 import 'package:air_components/widget/search_page.dart';
+import 'package:air_components/widget/splash_page.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -56,7 +57,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     FirebaseAdMob.instance
         .initialize(appId: "ca-app-pub-7567000157197488~5653744567");
-    _bannerAd = createBannerAd()..load();
+    _bannerAd = createBannerAd();
     super.initState();
   }
 
@@ -86,10 +87,11 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       navigatorObservers: [MyApp.observer],
-      initialRoute: '/',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => SplashPage(),
         '/search': (context) => SearchPage(),
-        '/': (context) => HomePage(bannerAd: _bannerAd,),
+        '/home': (context) => HomePage(bannerAd: _bannerAd,),
       },
     );
   }

@@ -8,6 +8,9 @@ class Status {
 
   Status.fromJson(Map<String, dynamic> json) {
     aqi = json['a'];
+    if(json['a'] == "-"){
+      aqi = "0";
+    }
     time = json['t']?.cast<String>();
     names = json['n']?.cast<String>();
     u = json['u'];

@@ -25,6 +25,9 @@ class ObserverBloc extends Bloc {
   PublishSubject<bool> _isLoading = PublishSubject();
   Observable<bool> get isLoading => _isLoading.stream;
 
+  PublishSubject<String> _updateStatus = PublishSubject();
+  Observable<String> get updateStatus => _updateStatus.stream;
+
   void fetchData(int explicitCityId) async {
     var cityId =
         explicitCityId == null ? await getSelectedCity() : explicitCityId;
@@ -38,6 +41,7 @@ class ObserverBloc extends Bloc {
       if (response == null) {
         response = await airService.fetchData(id);
       }
+      _updateStatus.sink.add(response?.time?.s?.en?.time);
       _city.sink.add(response?.city);
       _aqi.sink.add(response?.aqi);
       _iaqi.sink.add(response?.iaqi);
@@ -52,6 +56,7 @@ class ObserverBloc extends Bloc {
     _exception.close();
     _city.close();
     _aqi.close();
+    _updateStatus.close();
     _iaqi.close();
   }
 

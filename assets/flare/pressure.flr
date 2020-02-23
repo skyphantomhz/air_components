@@ -4,8 +4,8 @@
 		{
 			"name": "Artboard",
 			"translation": [
-				210.70645141601562,
-				485.78900146484375
+				210.0191650390625,
+				485.1016845703125
 			],
 			"width": 400,
 			"height": 400,
@@ -248,9 +248,9 @@
 					"parent": 8,
 					"opacity": 1,
 					"color": [
-						0.800000011920929,
-						0.800000011920929,
-						0.800000011920929,
+						0.9692522287368774,
+						0.9692522287368774,
+						0.9692522287368774,
 						1
 					],
 					"width": 5,
@@ -303,35 +303,6 @@
 					"type": "shape"
 				},
 				{
-					"name": "Color",
-					"parent": 11,
-					"opacity": 1,
-					"color": [
-						0.800000011920929,
-						0.800000011920929,
-						0.800000011920929,
-						1
-					],
-					"width": 1,
-					"cap": 0,
-					"join": 0,
-					"trim": 0,
-					"type": "colorStroke"
-				},
-				{
-					"name": "Color",
-					"parent": 11,
-					"opacity": 1,
-					"color": [
-						0.4000000059604645,
-						0.4000000059604645,
-						0.4000000059604645,
-						1
-					],
-					"fillRule": 1,
-					"type": "colorFill"
-				},
-				{
 					"name": "Ellipse Path",
 					"parent": 11,
 					"translation": [
@@ -349,6 +320,19 @@
 					"width": 150,
 					"height": 150,
 					"type": "ellipse"
+				},
+				{
+					"name": "Color",
+					"parent": 11,
+					"opacity": 1,
+					"color": [
+						0.747451663017273,
+						0.747451663017273,
+						0.747451663017273,
+						1
+					],
+					"fillRule": 1,
+					"type": "colorFill"
 				}
 			],
 			"animations": [
@@ -2147,35 +2131,6 @@
 					"type": "shape"
 				},
 				{
-					"name": "Color",
-					"parent": 14,
-					"opacity": 1,
-					"color": [
-						0.800000011920929,
-						0.800000011920929,
-						0.800000011920929,
-						1
-					],
-					"width": 1,
-					"cap": 0,
-					"join": 0,
-					"trim": 0,
-					"type": "colorStroke"
-				},
-				{
-					"name": "Color",
-					"parent": 14,
-					"opacity": 1,
-					"color": [
-						0.4000000059604645,
-						0.4000000059604645,
-						0.4000000059604645,
-						1
-					],
-					"fillRule": 1,
-					"type": "colorFill"
-				},
-				{
 					"name": "Triangle Path",
 					"parent": 14,
 					"translation": [
@@ -2244,7 +2199,7 @@
 				},
 				{
 					"name": "Color",
-					"parent": 18,
+					"parent": 16,
 					"opacity": 1,
 					"color": [
 						0.800000011920929,
@@ -2259,21 +2214,8 @@
 					"type": "colorStroke"
 				},
 				{
-					"name": "Color",
-					"parent": 18,
-					"opacity": 1,
-					"color": [
-						0.4000000059604645,
-						0.4000000059604645,
-						0.4000000059604645,
-						1
-					],
-					"fillRule": 1,
-					"type": "colorFill"
-				},
-				{
 					"name": "Ellipse Path",
-					"parent": 18,
+					"parent": 16,
 					"translation": [
 						0,
 						0
@@ -2289,6 +2231,19 @@
 					"width": 20,
 					"height": 20,
 					"type": "ellipse"
+				},
+				{
+					"name": "Color",
+					"parent": 16,
+					"opacity": 1,
+					"color": [
+						0.4000000059604645,
+						0.4000000059604645,
+						0.4000000059604645,
+						0.4000000059604645
+					],
+					"fillRule": 1,
+					"type": "colorFill"
 				},
 				{
 					"name": "Rectangle",
@@ -2313,7 +2268,7 @@
 				},
 				{
 					"name": "Color",
-					"parent": 22,
+					"parent": 20,
 					"opacity": 1,
 					"color": [
 						0.800000011920929,
@@ -2329,7 +2284,7 @@
 				},
 				{
 					"name": "Color",
-					"parent": 22,
+					"parent": 20,
 					"opacity": 1,
 					"color": [
 						0.800000011920929,
@@ -2342,7 +2297,7 @@
 				},
 				{
 					"name": "Rectangle Path",
-					"parent": 22,
+					"parent": 20,
 					"translation": [
 						0,
 						0

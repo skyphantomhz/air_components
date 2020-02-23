@@ -7,9 +7,11 @@ import 'package:air_components/util/aqi_util.dart';
 import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key, this.bannerAd}) : super(key: key);
@@ -33,7 +35,9 @@ class _HomePageState extends State<HomePage> {
     bloc.fetchData(null);
     timer?.cancel();
     timer =
-        new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData(null));
+        new Timer.periodic(scheduleFetch, (Timer t) =>
+         bloc.fetchData(null)
+        );
     super.initState();
   }
 
@@ -54,149 +58,205 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
+DateTime currentBackPressTime;
+
+Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || 
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(msg: "Press again to exit app");
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    widget.bannerAd
-      ..load()
-      ..show();
-    return Scaffold(
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            bloc.fetchData(null);
-          },
-          child: StreamBuilder<Exception>(
-              stream: bloc.exception,
-              builder: (context, snapshot) {
-                final exception = snapshot?.data;
-                if (exception != null)
-                  return Center(child: Text("${exception.toString()}"));
-                else
-                  return ListView(
-                    children: <Widget>[
-                      Container(
-                        alignment: Alignment.center,
-                        margin: EdgeInsets.only(top: 20),
-                        child: StreamBuilder<City>(
-                            stream: bloc.city,
-                            builder: (context, snapshot) {
-                              return InkWell(
-                                onTap: () async {
-                                  final result = await Navigator.pushNamed(
-                                      context, "/search");
-                                  if (result != null) {
-                                    bloc.fetchData(result);
-                                    timer?.cancel();
-                                    timer = new Timer.periodic(scheduleFetch,
-                                        (Timer t) => bloc.fetchData(null));
-                                  }
-                                },
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 10, horizontal: 40),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Container(
-                                        constraints:
-                                            BoxConstraints(maxWidth: 250),
-                                        child: Text(
-                                          snapshot?.data?.name ?? "N/A",
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                          style: TextStyle(fontSize: 20),
-                                        ),
-                                      ),
-                                      Container(
-                                          margin: EdgeInsets.only(left: 5),
-                                          child: Icon(Icons.edit, size: 15))
-                                    ],
-                                  ),
+    if (mounted) {
+      // widget.bannerAd
+      //   ..load()
+      //   ..show();
+    }
+    return WillPopScope(
+      onWillPop: onWillPop,
+          child: Scaffold(
+        body: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              bloc.fetchData(null);
+            },
+            child: StreamBuilder<Exception>(
+                stream: bloc.exception,
+                builder: (context, snapshot) {
+                  final exception = snapshot?.data;
+                  if (exception != null)
+                    return Center(child: Text("${exception.toString()}"));
+                  else
+                    return ListView(
+                      children: <Widget>[
+                        Container(
+                          child: Center(
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.all(5),
+                                  child: StreamBuilder<ConnectivityResult>(
+                                      stream:
+                                          Connectivity().onConnectivityChanged,
+                                      builder: (context, snapshot) {
+                                        final isInternetConnected =
+                                            snapshot.data ==
+                                                    ConnectivityResult.wifi ||
+                                                snapshot.data ==
+                                                    ConnectivityResult.mobile;
+                                        return Icon(
+                                          isInternetConnected
+                                              ? Icons.wifi
+                                              : Icons.perm_scan_wifi,
+                                          size: 15,
+                                        );
+                                      }),
                                 ),
+                                StreamBuilder<String>(
+                                  stream: bloc.updateStatus,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.data == null) {
+                                      return Container();
+                                    } else {
+                                      return Text(
+                                        snapshot.data,
+                                        style: TextStyle(fontSize: 10),
+                                      );
+                                    }
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: StreamBuilder<City>(
+                              stream: bloc.city,
+                              builder: (context, snapshot) {
+                                return InkWell(
+                                  onTap: () async {
+                                    final result = await Navigator.pushNamed(
+                                        context, "/search");
+                                    if (result != null) {
+                                      bloc.fetchData(result);
+                                      timer?.cancel();
+                                      timer = new Timer.periodic(scheduleFetch,
+                                          (Timer t) => bloc.fetchData(null));
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 40),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Container(
+                                          constraints:
+                                              BoxConstraints(maxWidth: 250),
+                                          child: Text(
+                                            snapshot?.data?.name ?? "N/A",
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.only(left: 5),
+                                            child: Icon(Icons.edit, size: 15))
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                        Container(
+                          height: 200.0,
+                          margin: EdgeInsets.only(top: 30),
+                          alignment: Alignment.topCenter,
+                          child: StreamBuilder<int>(
+                              stream: bloc.aqi,
+                              builder: (context, snapshot) {
+                                return Stack(
+                                  children: <Widget>[
+                                    Align(
+                                      alignment: Alignment.topCenter,
+                                      child: _buildArcView(snapshot),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                          snapshot?.data?.toString() ?? "",
+                                          style: TextStyle(
+                                              fontFamily: 'AllRoundGothic',
+                                              fontSize: 70)),
+                                    ),
+                                    Align(
+                                      alignment: Alignment(0, 0.5),
+                                      child: Text("AQI"),
+                                    ),
+                                    Align(
+                                      alignment: Alignment(0, 1),
+                                      child:
+                                          _buildStatus(context, snapshot?.data),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        ),
+                        StreamBuilder<List<Iaqi>>(
+                          stream: bloc.iaqi,
+                          builder: (context, snapshot) {
+                            if (snapshot?.data == null)
+                              return Container();
+                            else
+                              return GridView.count(
+                                childAspectRatio: 4,
+                                crossAxisCount: 2,
+                                physics: ScrollPhysics(),
+                                shrinkWrap: true,
+                                children: _buildAirComponents(
+                                    _getAirComponents(snapshot.data)),
                               );
-                            }),
-                      ),
-                      Container(
-                        height: 200.0,
-                        margin: EdgeInsets.only(top: 30),
-                        alignment: Alignment.topCenter,
-                        child: StreamBuilder<int>(
-                            stream: bloc.aqi,
-                            builder: (context, snapshot) {
-                              return Stack(
+                          },
+                        ),
+                        StreamBuilder(
+                          stream: bloc.iaqi,
+                          builder: (context, snapshot) {
+                            final conditions =
+                                _getWeatherConditions(snapshot?.data);
+                            if (snapshot?.data == null)
+                              return Container();
+                            else
+                              return Column(
                                 children: <Widget>[
                                   Align(
-                                    alignment: Alignment.topCenter,
-                                    child: _buildArcView(snapshot),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                        snapshot?.data?.toString() ?? "",
-                                        style: TextStyle(
-                                            fontFamily: 'AllRoundGothic',
-                                            fontSize: 70)),
-                                  ),
-                                  Align(
-                                    alignment: Alignment(0, 0.5),
-                                    child: Text("AQI"),
-                                  ),
-                                  Align(
-                                    alignment: Alignment(0, 1),
-                                    child:
-                                        _buildStatus(context, snapshot?.data),
-                                  ),
+                                      alignment: Alignment.centerLeft,
+                                      child: Container(
+                                          margin:
+                                              EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                          child: Text(
+                                            "Weather",
+                                            style: TextStyle(fontSize: 15),
+                                          ))),
+                                  _buildConditions(conditions),
                                 ],
                               );
-                            }),
-                      ),
-                      StreamBuilder<List<Iaqi>>(
-                        stream: bloc.iaqi,
-                        builder: (context, snapshot) {
-                          if (snapshot?.data == null)
-                            return Container();
-                          else
-                            return GridView.count(
-                              childAspectRatio: 4,
-                              crossAxisCount: 2,
-                              physics: ScrollPhysics(),
-                              shrinkWrap: true,
-                              children: _buildAirComponents(
-                                  _getAirComponents(snapshot.data)),
-                            );
-                        },
-                      ),
-                      StreamBuilder(
-                        stream: bloc.iaqi,
-                        builder: (context, snapshot) {
-                          final conditions =
-                              _getWeatherConditions(snapshot?.data);
-                          if (snapshot?.data == null)
-                            return Container();
-                          else
-                            return Column(
-                              children: <Widget>[
-                                Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                        margin:
-                                            EdgeInsets.fromLTRB(10, 10, 10, 5),
-                                        child: Text(
-                                          "Weather",
-                                          style: TextStyle(fontSize: 15),
-                                        ))),
-                                _buildConditions(conditions),
-                              ],
-                            );
-                        },
-                      )
-                    ],
-                  );
-              }),
+                          },
+                        )
+                      ],
+                    );
+                }),
+          ),
         ),
       ),
     );
@@ -230,17 +290,20 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: <Widget>[
         Container(
-          width: 50,
-          height: 50,
-          child: buildConditionIcon(condition.getConditionIconUrl())),
+            width: 50,
+            height: 50,
+            child: buildConditionIcon(condition.getConditionIconUrl())),
         Text(
             "${condition.v.first.toString()}${condition.getConditionUnit(true)}")
       ],
     );
   }
 
-  Widget buildConditionIcon(String conditionIconUrl){
-    return FlareActor(conditionIconUrl, alignment:Alignment.center, fit:BoxFit.contain, animation:"Untitled");
+  Widget buildConditionIcon(String conditionIconUrl) {
+    return FlareActor(conditionIconUrl,
+        alignment: Alignment.center,
+        fit: BoxFit.contain,
+        animation: "Untitled");
   }
 
   _showDialog(BuildContext context) async {

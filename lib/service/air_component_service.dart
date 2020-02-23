@@ -16,6 +16,7 @@ class AirComponentSerivce {
       if (response.statusCode == 200) {
         final responseObject =
             ObserverResponse.fromJson(_decoder.convert(response.body));
+            print(responseObject.rxs.obs.first.msg);
         return responseObject.rxs.obs.first.msg;
       } else {
         throw Exception("Failed to load route");
