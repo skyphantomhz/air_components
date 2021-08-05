@@ -7,15 +7,12 @@ import 'package:air_components/util/aqi_util.dart';
 import 'package:air_components/widget/home_component/progress_arc.dart';
 import 'package:air_components/widget/home_component/weather_property.dart';
 import 'package:bloc_provider/bloc_provider.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key key, this.bannerAd}) : super(key: key);
-  final BannerAd bannerAd;
+  const HomePage({Key key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,9 +32,7 @@ class _HomePageState extends State<HomePage> {
     bloc.fetchData(null);
     timer?.cancel();
     timer =
-        new Timer.periodic(scheduleFetch, (Timer t) =>
-         bloc.fetchData(null)
-        );
+        new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData(null));
     super.initState();
   }
 
@@ -58,11 +53,12 @@ class _HomePageState extends State<HomePage> {
       }
     });
   }
-DateTime currentBackPressTime;
 
-Future<bool> onWillPop() {
+  DateTime currentBackPressTime;
+
+  Future<bool> onWillPop() {
     DateTime now = DateTime.now();
-    if (currentBackPressTime == null || 
+    if (currentBackPressTime == null ||
         now.difference(currentBackPressTime) > Duration(seconds: 2)) {
       currentBackPressTime = now;
       Fluttertoast.showToast(msg: "Press again to exit app");
@@ -80,7 +76,7 @@ Future<bool> onWillPop() {
     }
     return WillPopScope(
       onWillPop: onWillPop,
-          child: Scaffold(
+      child: Scaffold(
         body: SafeArea(
           child: RefreshIndicator(
             onRefresh: () async {
@@ -99,25 +95,25 @@ Future<bool> onWillPop() {
                           child: Center(
                             child: Row(
                               children: <Widget>[
-                                Container(
-                                  margin: EdgeInsets.all(5),
-                                  child: StreamBuilder<ConnectivityResult>(
-                                      stream:
-                                          Connectivity().onConnectivityChanged,
-                                      builder: (context, snapshot) {
-                                        final isInternetConnected =
-                                            snapshot.data ==
-                                                    ConnectivityResult.wifi ||
-                                                snapshot.data ==
-                                                    ConnectivityResult.mobile;
-                                        return Icon(
-                                          isInternetConnected
-                                              ? Icons.wifi
-                                              : Icons.perm_scan_wifi,
-                                          size: 15,
-                                        );
-                                      }),
-                                ),
+                                // Container(
+                                //   margin: EdgeInsets.all(5),
+                                //   child: StreamBuilder<ConnectivityResult>(
+                                //       stream:
+                                //           Connectivity().onConnectivityChanged,
+                                //       builder: (context, snapshot) {
+                                //         final isInternetConnected =
+                                //             snapshot.data ==
+                                //                     ConnectivityResult.wifi ||
+                                //                 snapshot.data ==
+                                //                     ConnectivityResult.mobile;
+                                //         return Icon(
+                                //           isInternetConnected
+                                //               ? Icons.wifi
+                                //               : Icons.perm_scan_wifi,
+                                //           size: 15,
+                                //         );
+                                //       }),
+                                // ),
                                 StreamBuilder<String>(
                                   stream: bloc.updateStatus,
                                   builder: (context, snapshot) {
@@ -157,7 +153,8 @@ Future<bool> onWillPop() {
                                     child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         Container(
@@ -242,8 +239,8 @@ Future<bool> onWillPop() {
                                   Align(
                                       alignment: Alignment.centerLeft,
                                       child: Container(
-                                          margin:
-                                              EdgeInsets.fromLTRB(10, 10, 10, 5),
+                                          margin: EdgeInsets.fromLTRB(
+                                              10, 10, 10, 5),
                                           child: Text(
                                             "Weather",
                                             style: TextStyle(fontSize: 15),

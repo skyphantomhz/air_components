@@ -11,22 +11,22 @@ class ObserverBloc extends Bloc {
   AirComponentSerivce airService = AirComponentSerivce();
 
   PublishSubject<Exception> _exception = PublishSubject();
-  Observable<Exception> get exception => _exception.stream;
+  Stream<Exception> get exception => _exception.stream;
 
   PublishSubject<City> _city = PublishSubject();
-  Observable<City> get city => _city.stream;
+  Stream<City> get city => _city.stream;
 
   PublishSubject<int> _aqi = PublishSubject();
-  Observable<int> get aqi => _aqi.stream;
+  Stream<int> get aqi => _aqi.stream;
 
   PublishSubject<List<Iaqi>> _iaqi = PublishSubject();
-  Observable<List<Iaqi>> get iaqi => _iaqi.stream;
+  Stream<List<Iaqi>> get iaqi => _iaqi.stream;
 
   PublishSubject<bool> _isLoading = PublishSubject();
-  Observable<bool> get isLoading => _isLoading.stream;
+  Stream<bool> get isLoading => _isLoading.stream;
 
   PublishSubject<String> _updateStatus = PublishSubject();
-  Observable<String> get updateStatus => _updateStatus.stream;
+  Stream<String> get updateStatus => _updateStatus.stream;
 
   void fetchData(int explicitCityId) async {
     var cityId =

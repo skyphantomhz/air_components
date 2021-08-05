@@ -12,11 +12,12 @@ class AirComponentSerivce {
 
   Future<Msg> fetchData(int id) async {
     try {
-      final response = await client.get(baseRequest +"/@$id/obs.vn.json");
+      final response =
+          await client.get(Uri.parse(baseRequest + "/@$id/obs.vn.json"));
       if (response.statusCode == 200) {
         final responseObject =
             ObserverResponse.fromJson(_decoder.convert(response.body));
-            print(responseObject.rxs.obs.first.msg);
+        print(responseObject.rxs.obs.first.msg);
         return responseObject.rxs.obs.first.msg;
       } else {
         throw Exception("Failed to load route");

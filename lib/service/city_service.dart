@@ -12,7 +12,8 @@ class CityService {
 
   Future<List<CitySortInfo>> searchCity(String keyword) async {
     try {
-      final response = await client.get(baseRequest + Uri.encodeComponent(keyword));
+      final response = await client
+          .get(Uri.parse(baseRequest + Uri.encodeComponent(keyword)));
       if (response.statusCode == 200) {
         final responseObject =
             SearchResponse.fromJson(_decoder.convert(response.body));

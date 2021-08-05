@@ -11,13 +11,13 @@ class SearchCityBloc extends Bloc {
 
   PublishSubject<List<CitySortInfo>> _cities =
       PublishSubject<List<CitySortInfo>>();
-  Observable<List<CitySortInfo>> get cities => _cities.stream;
+  Stream<List<CitySortInfo>> get cities => _cities.stream;
 
   PublishSubject<int> _navigateToMain = PublishSubject<int>();
-  Observable<int> get navigateToMain => _navigateToMain.stream;
+  Stream<int> get navigateToMain => _navigateToMain.stream;
 
   PublishSubject<String> _keyword = PublishSubject<String>();
-  Observable<String> get keyword => _keyword.stream;
+  Stream<String> get keyword => _keyword.stream;
 
   @override
   void dispose() {
@@ -26,13 +26,13 @@ class SearchCityBloc extends Bloc {
     _keyword.close();
   }
 
-  void listener(){
-    keyword.debounceTime(Duration(milliseconds: 500)).listen((keyword){
+  void listener() {
+    keyword.debounceTime(Duration(milliseconds: 500)).listen((keyword) {
       _search(keyword);
     });
   }
 
-  void keyWordChange(String keyword){
+  void keyWordChange(String keyword) {
     _keyword.sink.add(keyword);
   }
 
@@ -42,7 +42,7 @@ class SearchCityBloc extends Bloc {
     try {
       _cities.sink.add(response);
     } catch (err) {
-      print("Error: "+err.toString());
+      print("Error: " + err.toString());
     }
   }
 
