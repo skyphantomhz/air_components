@@ -1,5 +1,5 @@
-import 'package:air_components/model/main_request/status.dart';
-import 'package:air_components/model/main_request/utc.dart';
+import 'status.dart';
+import 'utc.dart';
 
 class Time {
   String v;

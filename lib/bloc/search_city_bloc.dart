@@ -1,13 +1,11 @@
-import 'package:air_components/model/city/city_sort_info.dart';
-import 'package:air_components/service/city_service.dart';
-import 'package:bloc_provider/bloc_provider.dart';
-import 'package:get_it/get_it.dart';
+import '../model/city/city_sort_info.dart';
+import '../service/city_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SearchCityBloc extends Bloc {
-  CityService _cityService = GetIt.I<CityService>();
+class SearchCityBlocX {
+  CityService _cityService = CityService();
 
   PublishSubject<List<CitySortInfo>> _cities =
       PublishSubject<List<CitySortInfo>>();

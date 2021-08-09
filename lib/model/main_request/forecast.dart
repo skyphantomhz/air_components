@@ -1,6 +1,6 @@
-import 'package:air_components/model/main_request/aqi.dart';
-import 'package:air_components/model/main_request/species.dart';
-import 'package:air_components/model/main_request/wind.dart';
+import 'aqi.dart';
+import 'species.dart';
+import 'wind.dart';
 
 class Forecast {
   List<Aqi> aqi;

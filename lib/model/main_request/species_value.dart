@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/model.dart';
+import 'model.dart';
 
 class SpeciesValue {
   List<String> data;

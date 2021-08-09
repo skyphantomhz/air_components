@@ -1,30 +1,11 @@
-import 'package:air_components/bloc/search_city_bloc.dart';
-import 'package:air_components/model/city/city_sort_info.dart';
-import 'package:air_components/util/aqi_util.dart';
-import 'package:bloc_provider/bloc_provider.dart';
+import '../logic/bloc/searchcity_bloc.dart';
+import '../logic/cubit/city_cubit.dart';
+import '../util/aqi_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SearchPage extends StatefulWidget {
-  SearchPage({Key key}) : super(key: key);
-
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  SearchCityBloc bloc;
+class SearchPage extends StatelessWidget {
   TextEditingController _textController = TextEditingController();
-  @override
-  void initState() {
-    bloc = BlocProvider.of<SearchCityBloc>(context);
-    bloc.listener();
-    bloc.navigateToMain.listen((cityId) {
-      if (cityId != null) {
-        Navigator.pop(context, cityId);
-      }
-    });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +46,15 @@ class _SearchPageState extends State<SearchPage> {
                             fillColor: Colors.white,
                             filled: true),
                         onChanged: (keyWord) {
-                          bloc.keyWordChange(keyWord);
+                          print("input keyword: $keyWord");
+                          context
+                              .read<SearchCityBloc>()
+                              .add(SearchCityEvent(keyWord));
                         },
                         onSubmitted: (keyWord) {
-                          bloc.keyWordChange(keyWord);
+                          context
+                              .read<SearchCityBloc>()
+                              .add(SearchCityEvent(keyWord));
                         },
                       ),
                     ),
@@ -83,24 +69,25 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
               Expanded(
-                child: StreamBuilder<List<CitySortInfo>>(
-                  stream: bloc.cities,
-                  builder: (context, snapshot) {
-                    final data = snapshot?.data;
-                    if (data == null) {
-                      return Container();
-                    } else {
+                child: Builder(
+                  builder: (context) {
+                    final state = context.watch<SearchCityBloc>().state;
+                    if (state is SearchFailed) {
+                      return Center(child: Text(state.message));
+                    } else if (state is SearchResult &&
+                        state.cities != null &&
+                        state.cities.isNotEmpty) {
                       return ListView.builder(
-                        itemCount: data.length,
+                        itemCount: state.cities.length,
                         itemBuilder: (context, index) {
-                          final item = data[index];
+                          final item = state.cities[index];
                           int itemAqi;
                           try {
                             itemAqi = int.parse(item.s.aqi);
                           } on FormatException {}
                           return InkWell(
                             onTap: () {
-                              bloc.selectCity(item.x);
+                              context.read<CityCubit>().addCity(item);
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(10, 0, 10, 2),
@@ -128,6 +115,10 @@ class _SearchPageState extends State<SearchPage> {
                             ),
                           );
                         },
+                      );
+                    } else {
+                      return Center(
+                        child: Text("Not found"),
                       );
                     }
                   },

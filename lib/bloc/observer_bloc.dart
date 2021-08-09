@@ -1,13 +1,12 @@
-import 'package:air_components/model/main_request/city.dart';
-import 'package:air_components/model/main_request/iaqi.dart';
-import 'package:air_components/model/main_request/msg.dart';
-import 'package:air_components/service/air_component_service.dart';
-import 'package:bloc_provider/bloc_provider.dart';
+import '../model/main_request/city.dart';
+import '../model/main_request/iaqi.dart';
+import '../model/main_request/msg.dart';
+import '../service/air_component_service.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ObserverBloc extends Bloc {
+class ObserverBloc {
   AirComponentSerivce airService = AirComponentSerivce();
 
   PublishSubject<Exception> _exception = PublishSubject();

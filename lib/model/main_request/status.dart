@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/language_status.dart';
+import 'language_status.dart';
 
 class Status {
   LanguageStatus en;
@@ -30,12 +30,16 @@ class Status {
 
   Status.fromJson(Map<String, dynamic> json) {
     en = json['en'] != null ? new LanguageStatus.fromJson(json['en']) : null;
-    zhCN = json['zh-CN'] != null ? new LanguageStatus.fromJson(json['zh-CN']) : null;
+    zhCN = json['zh-CN'] != null
+        ? new LanguageStatus.fromJson(json['zh-CN'])
+        : null;
     ja = json['ja'] != null ? new LanguageStatus.fromJson(json['ja']) : null;
     es = json['es'] != null ? new LanguageStatus.fromJson(json['es']) : null;
     ko = json['ko'] != null ? new LanguageStatus.fromJson(json['ko']) : null;
     ru = json['ru'] != null ? new LanguageStatus.fromJson(json['ru']) : null;
-    zhTW = json['zh-TW'] != null ? new LanguageStatus.fromJson(json['zh-TW']) : null;
+    zhTW = json['zh-TW'] != null
+        ? new LanguageStatus.fromJson(json['zh-TW'])
+        : null;
     fr = json['fr'] != null ? new LanguageStatus.fromJson(json['fr']) : null;
     pl = json['pl'] != null ? new LanguageStatus.fromJson(json['pl']) : null;
     de = json['de'] != null ? new LanguageStatus.fromJson(json['de']) : null;

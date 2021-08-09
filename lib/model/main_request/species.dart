@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/species_value.dart';
+import 'species_value.dart';
 
 class Species {
   SpeciesValue pm25;
@@ -9,8 +9,10 @@ class Species {
   Species({this.pm25, this.pm10, this.o3, this.uvi});
 
   Species.fromJson(Map<String, dynamic> json) {
-    pm25 = json['pm25'] != null ? new SpeciesValue.fromJson(json['pm25']) : null;
-    pm10 = json['pm10'] != null ? new SpeciesValue.fromJson(json['pm10']) : null;
+    pm25 =
+        json['pm25'] != null ? new SpeciesValue.fromJson(json['pm25']) : null;
+    pm10 =
+        json['pm10'] != null ? new SpeciesValue.fromJson(json['pm10']) : null;
     o3 = json['o3'] != null ? new SpeciesValue.fromJson(json['o3']) : null;
     uvi = json['uvi'] != null ? new SpeciesValue.fromJson(json['uvi']) : null;
   }

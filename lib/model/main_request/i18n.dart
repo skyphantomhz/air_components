@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/localize_string.dart';
+import 'localize_string.dart';
 
 class I18n {
   LocalizeString name;
@@ -7,8 +7,11 @@ class I18n {
   I18n({this.name, this.title});
 
   I18n.fromJson(Map<String, dynamic> json) {
-    name = json['name'] != null ? new LocalizeString.fromJson(json['name']) : null;
-    title = json['title'] != null ? new LocalizeString.fromJson(json['title']) : null;
+    name =
+        json['name'] != null ? new LocalizeString.fromJson(json['name']) : null;
+    title = json['title'] != null
+        ? new LocalizeString.fromJson(json['title'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {

@@ -1,5 +1,4 @@
-
-import 'package:air_components/widget/home_component/linear_progress.dart';
+import 'linear_progress.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/obs.dart';
+import 'obs.dart';
 
 class Rxs {
   List<Obs> obs;

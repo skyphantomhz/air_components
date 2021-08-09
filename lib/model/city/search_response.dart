@@ -1,6 +1,4 @@
-
-
-import 'package:air_components/model/city/city_sort_info.dart';
+import 'city_sort_info.dart';
 
 class SearchResponse {
   String dt;

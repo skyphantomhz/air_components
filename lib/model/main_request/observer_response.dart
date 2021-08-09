@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/rxs.dart';
+import 'rxs.dart';
 
 class ObserverResponse {
   String dt;

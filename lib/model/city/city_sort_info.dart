@@ -1,6 +1,8 @@
-import 'package:air_components/model/city/status.dart';
+import 'package:equatable/equatable.dart';
 
-class CitySortInfo {
+import 'status.dart';
+
+class CitySortInfo extends Equatable {
   Status s;
   List<String> n;
   int x;
@@ -28,4 +30,7 @@ class CitySortInfo {
     data['z'] = this.z;
     return data;
   }
+
+  @override
+  List<Object> get props => [x];
 }

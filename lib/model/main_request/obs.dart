@@ -1,4 +1,4 @@
-import 'package:air_components/model/main_request/msg.dart';
+import 'msg.dart';
 
 class Obs {
   Msg msg;

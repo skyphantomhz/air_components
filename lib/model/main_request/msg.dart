@@ -1,9 +1,9 @@
-import 'package:air_components/model/main_request/city.dart';
-import 'package:air_components/model/main_request/forecast.dart';
-import 'package:air_components/model/main_request/i18n.dart';
-import 'package:air_components/model/main_request/iaqi.dart';
-import 'package:air_components/model/main_request/nearestV2.dart';
-import 'package:air_components/model/main_request/time.dart';
+import 'city.dart';
+import 'forecast.dart';
+import 'i18n.dart';
+import 'iaqi.dart';
+import 'nearestV2.dart';
+import 'time.dart';
 
 class Msg {
   int timestamp;
@@ -35,7 +35,7 @@ class Msg {
       });
     }
     aqi = 0;
-    if(json['aqi'].toString() != "-"){
+    if (json['aqi'].toString() != "-") {
       aqi = json['aqi'];
     }
     time = json['time'] != null ? new Time.fromJson(json['time']) : null;

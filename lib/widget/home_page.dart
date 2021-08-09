@@ -1,261 +1,206 @@
-import 'dart:async';
+import '../logic/cubit/city_cubit.dart';
 
-import 'package:air_components/bloc/observer_bloc.dart';
-import 'package:air_components/model/main_request/city.dart';
-import 'package:air_components/model/main_request/iaqi.dart';
-import 'package:air_components/util/aqi_util.dart';
-import 'package:air_components/widget/home_component/progress_arc.dart';
-import 'package:air_components/widget/home_component/weather_property.dart';
-import 'package:bloc_provider/bloc_provider.dart';
+import '../logic/cubit/weather_cubit.dart';
+import '../model/main_request/iaqi.dart';
+import '../util/aqi_util.dart';
+import 'home_component/progress_arc.dart';
+import 'home_component/weather_property.dart';
+import 'screen.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key key}) : super(key: key);
+class HomePage extends StatelessWidget {
+  HomePage({Key key}) : super(key: key);
 
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final int sizeAttributes = 6;
-  final scheduleFetch = const Duration(minutes: 5);
   bool isLoading;
-  Timer timer;
-
-  ObserverBloc bloc;
-  @override
-  void initState() {
-    bloc = BlocProvider.of<ObserverBloc>(context);
-    _setListener(bloc, context);
-    bloc.fetchData(null);
-    timer?.cancel();
-    timer =
-        new Timer.periodic(scheduleFetch, (Timer t) => bloc.fetchData(null));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
-
-  void _setListener(ObserverBloc bloc, BuildContext context) {
-    bloc.isLoading.listen((value) {
-      if (value == true && mounted) {
-        _showDialog(context);
-      } else {
-        if (isLoading) {
-          Navigator.of(context).pop();
-        }
-      }
-    });
-  }
-
-  DateTime currentBackPressTime;
-
-  Future<bool> onWillPop() {
-    DateTime now = DateTime.now();
-    if (currentBackPressTime == null ||
-        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
-      currentBackPressTime = now;
-      Fluttertoast.showToast(msg: "Press again to exit app");
-      return Future.value(false);
-    }
-    return Future.value(true);
-  }
 
   @override
   Widget build(BuildContext context) {
-    if (mounted) {
-      // widget.bannerAd
-      //   ..load()
-      //   ..show();
-    }
-    return WillPopScope(
-      onWillPop: onWillPop,
-      child: Scaffold(
-        body: SafeArea(
-          child: RefreshIndicator(
-            onRefresh: () async {
-              bloc.fetchData(null);
-            },
-            child: StreamBuilder<Exception>(
-                stream: bloc.exception,
-                builder: (context, snapshot) {
-                  final exception = snapshot?.data;
-                  if (exception != null)
-                    return Center(child: Text("${exception.toString()}"));
-                  else
-                    return ListView(
-                      children: <Widget>[
-                        Container(
-                          child: Center(
-                            child: Row(
-                              children: <Widget>[
-                                // Container(
-                                //   margin: EdgeInsets.all(5),
-                                //   child: StreamBuilder<ConnectivityResult>(
-                                //       stream:
-                                //           Connectivity().onConnectivityChanged,
-                                //       builder: (context, snapshot) {
-                                //         final isInternetConnected =
-                                //             snapshot.data ==
-                                //                     ConnectivityResult.wifi ||
-                                //                 snapshot.data ==
-                                //                     ConnectivityResult.mobile;
-                                //         return Icon(
-                                //           isInternetConnected
-                                //               ? Icons.wifi
-                                //               : Icons.perm_scan_wifi,
-                                //           size: 15,
-                                //         );
-                                //       }),
-                                // ),
-                                StreamBuilder<String>(
-                                  stream: bloc.updateStatus,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.data == null) {
-                                      return Container();
-                                    } else {
-                                      return Text(
-                                        snapshot.data,
-                                        style: TextStyle(fontSize: 10),
-                                      );
-                                    }
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
+    final weatherCubit = context.read<WeatherCubit>();
+    final cityState = context.watch<CityCubit>().state;
+    weatherCubit.fetchData(cityState.citySelected?.x);
+    return Scaffold(
+      endDrawer: Drawer(
+        child: Material(
+          child: Builder(builder: (builderContext) {
+            final cityState = builderContext.watch<CityCubit>().state;
+            final cities = cityState.cities;
+            final itemCount = (cities?.length ?? 0) + 1;
+            print("Item count is $itemCount");
+            return ListView.builder(
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                if (index < (cities?.length ?? 0)) {
+                  final city = cities[index];
+                  return Card(
+                    elevation: 8,
+                    child: InkWell(
+                      onTap: () {
+                        final cityBloc = builderContext.read<CityCubit>();
+                        cityBloc.selectCity(city);
+                      },
+                      child: Container(
+                        child: Text(
+                          city.s.names.first,
+                          style: Theme.of(context).textTheme.headline5,
                         ),
-                        Container(
-                          alignment: Alignment.center,
-                          child: StreamBuilder<City>(
-                              stream: bloc.city,
-                              builder: (context, snapshot) {
-                                return InkWell(
-                                  onTap: () async {
-                                    final result = await Navigator.pushNamed(
-                                        context, "/search");
-                                    if (result != null) {
-                                      bloc.fetchData(result);
-                                      timer?.cancel();
-                                      timer = new Timer.periodic(scheduleFetch,
-                                          (Timer t) => bloc.fetchData(null));
-                                    }
-                                  },
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 40),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Container(
-                                          constraints:
-                                              BoxConstraints(maxWidth: 250),
-                                          child: Text(
-                                            snapshot?.data?.name ?? "N/A",
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                            style: TextStyle(fontSize: 20),
-                                          ),
-                                        ),
-                                        Container(
-                                            margin: EdgeInsets.only(left: 5),
-                                            child: Icon(Icons.edit, size: 15))
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                        Container(
-                          height: 200.0,
-                          margin: EdgeInsets.only(top: 30),
-                          alignment: Alignment.topCenter,
-                          child: StreamBuilder<int>(
-                              stream: bloc.aqi,
-                              builder: (context, snapshot) {
-                                return Stack(
-                                  children: <Widget>[
-                                    Align(
-                                      alignment: Alignment.topCenter,
-                                      child: _buildArcView(snapshot),
-                                    ),
-                                    Align(
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                          snapshot?.data?.toString() ?? "",
-                                          style: TextStyle(
-                                              fontFamily: 'AllRoundGothic',
-                                              fontSize: 70)),
-                                    ),
-                                    Align(
-                                      alignment: Alignment(0, 0.5),
-                                      child: Text("AQI"),
-                                    ),
-                                    Align(
-                                      alignment: Alignment(0, 1),
-                                      child:
-                                          _buildStatus(context, snapshot?.data),
-                                    ),
-                                  ],
-                                );
-                              }),
-                        ),
-                        StreamBuilder<List<Iaqi>>(
-                          stream: bloc.iaqi,
-                          builder: (context, snapshot) {
-                            if (snapshot?.data == null)
-                              return Container();
-                            else
-                              return GridView.count(
-                                childAspectRatio: 4,
-                                crossAxisCount: 2,
-                                physics: ScrollPhysics(),
-                                shrinkWrap: true,
-                                children: _buildAirComponents(
-                                    _getAirComponents(snapshot.data)),
-                              );
-                          },
-                        ),
-                        StreamBuilder(
-                          stream: bloc.iaqi,
-                          builder: (context, snapshot) {
-                            final conditions =
-                                _getWeatherConditions(snapshot?.data);
-                            if (snapshot?.data == null)
-                              return Container();
-                            else
-                              return Column(
-                                children: <Widget>[
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Container(
-                                          margin: EdgeInsets.fromLTRB(
-                                              10, 10, 10, 5),
-                                          child: Text(
-                                            "Weather",
-                                            style: TextStyle(fontSize: 15),
-                                          ))),
-                                  _buildConditions(conditions),
-                                ],
-                              );
-                          },
-                        )
-                      ],
-                    );
-                }),
-          ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                      ),
+                    ),
+                  );
+                } else {
+                  return Card(
+                    elevation: 8,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.popAndPushNamed(context, SEARCH);
+                      },
+                      child: Container(
+                        child: Icon(Icons.add),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      ),
+                    ),
+                  );
+                }
+              },
+            );
+          }),
         ),
       ),
+      appBar: AppBar(
+        actions: [
+          Builder(
+            builder: (context) => IconButton(
+                onPressed: () {
+                  Scaffold.of(context).openEndDrawer();
+                },
+                icon: Icon(Icons.settings)),
+          )
+        ],
+      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            final cityState = context.read<CityCubit>().state;
+            weatherCubit.fetchData(cityState.citySelected?.x);
+          },
+          child: BlocBuilder<WeatherCubit, WeatherState>(
+              builder: (context, state) {
+            if (state is WeatherInitial) {
+              return Center(
+                child: Text("Please select a city"),
+              );
+            } else if (state is WeatherLoading) {
+              return Center(
+                child: Container(
+                    width: 40, height: 40, child: CircularProgressIndicator()),
+              );
+            } else if (state is WeatherError) {
+              AlertDialog(
+                title: const Text('Error'),
+                content: Text("Cause: ${state.message}"),
+                actions: <Widget>[
+                  TextButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+              return Center(
+                child: Text(state.message),
+              );
+            } else if (state is WeatherResult) {
+              return _buildContentView(context, state);
+            } else {
+              return Center(
+                child: Text("Something went wrong"),
+              );
+            }
+          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentView(BuildContext context, WeatherResult state) {
+    return ListView(
+      children: <Widget>[
+        SizedBox(
+          height: 16,
+        ),
+        Container(
+            alignment: Alignment.center,
+            child: Text(
+              state.city.name,
+              style: Theme.of(context).textTheme.headline5,
+            )),
+        Container(
+            height: 200.0,
+            margin: EdgeInsets.only(top: 30),
+            alignment: Alignment.topCenter,
+            child: Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: _buildArcView(state.aqi),
+                ),
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(state.aqi.toString() ?? "",
+                      style: TextStyle(
+                          fontFamily: 'AllRoundGothic', fontSize: 70)),
+                ),
+                Align(
+                  alignment: Alignment(0, 0.5),
+                  child: Text("AQI"),
+                ),
+                Align(
+                  alignment: Alignment(0, 1),
+                  child: _buildStatus(context, state.aqi),
+                ),
+              ],
+            )),
+        Builder(
+          builder: (context) {
+            if (state.iaqi == null)
+              return Container();
+            else
+              return GridView.count(
+                childAspectRatio: 4,
+                crossAxisCount: 2,
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                children: _buildAirComponents(_getAirComponents(state.iaqi)),
+              );
+          },
+        ),
+        Builder(
+          builder: (context) {
+            final conditions = _getWeatherConditions(state.iaqi);
+            if (state.iaqi == null)
+              return Container();
+            else
+              return Column(
+                children: <Widget>[
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                          margin: EdgeInsets.fromLTRB(10, 10, 10, 5),
+                          child: Text(
+                            "Weather",
+                            style: TextStyle(fontSize: 15),
+                          ))),
+                  _buildConditions(conditions),
+                ],
+              );
+          },
+        )
+      ],
     );
   }
 
@@ -319,8 +264,7 @@ class _HomePageState extends State<HomePage> {
     isLoading = false;
   }
 
-  _buildArcView(AsyncSnapshot<int> snapshot) {
-    var aqi = snapshot.data ?? 0;
+  _buildArcView(int aqi) {
     double percent = aqi == 0 ? 0 : aqi / 300;
     var color = aqiColor(aqi);
     percent = percent > 1 ? 1 : percent;
